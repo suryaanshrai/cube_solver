@@ -1,7 +1,14 @@
 {% extends "layout.html" %}
 {% block title %}
-Homepage
+    Homepage
 {% endblock %}
 {% block main %}
-Knock Knock motherfuckers!!!! THE KING IS BACK!!!
+    <img src="/static/cube.gif" alt="Cube">
+    
+    <div >
+        <p class="mytext">Do you have a cube left unsolved from a long time? Allow this web application to help you solve and it will be solved in no time!</p>
+    </div>        
+    <form action="/input" method="get">
+        <button type="submit" class="btn btn-primary btn-lg">Start Solving</button>
+    </form>
 {% endblock %}
