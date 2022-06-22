@@ -1,0 +1,8 @@
+{% extends "inputLayout.html" %}
+{% block inMain %}
+    Input Blue Side with the Yellow side on top
+    <form action="/inblue" method="post" name="blue">
+        <input accept="image/" capture="environment" type="file"  required>
+        <button type="submit">Submit</button>
+    </form>
+{% endblock %}
