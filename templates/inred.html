@@ -1,8 +1,12 @@
 {% extends "inputLayout.html" %}
 {% block inMain %}
     Input Red Side with the Yellow side on top
-    <form action="/inred" method="post" name="red">
-        <input accept="image/" capture="environment" type="file"  required>
+    <form action="/inred" method="post">
+        <input accept="image/" capture="environment" name="red" type="file">
+        <button type="submit">Submit</button>
+    </form>
+    <form action="/inred" method="post">
+        <input name="sred" type="text">
         <button type="submit">Submit</button>
     </form>
 {% endblock %}

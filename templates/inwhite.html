@@ -1,8 +1,12 @@
 {% extends "inputLayout.html" %}
 {% block inMain %}
     Input White Side with the Red side on top
-    <form action="/inwhite" method="post" name="white">
-        <input accept="image/" capture="environment" type="file"  required>
+    <form action="/inwhite" method="post">
+        <input accept="image/" capture="environment" name="white" type="file" >
+        <button type="submit">Submit</button>
+    </form>
+    <form action="/inwhite" method="post">
+        <input name="swhite" type="text">
         <button type="submit">Submit</button>
     </form>
 {% endblock %}

@@ -1,8 +1,12 @@
 {% extends "inputLayout.html" %}
 {% block inMain %}
     Input Green Side with the Yellow side on top
-    <form action="/ingreen" method="post" name="green">
-        <input accept="image/" capture="environment" type="file"  required>
+    <form action="/ingreen" method="post">
+        <input accept="image/" capture="environment" name="green" type="file">
+        <button type="submit">Submit</button>
+    </form>
+    <form action="/ingreen" method="post">
+        <input name="sgreen" type="text">
         <button type="submit">Submit</button>
     </form>
 {% endblock %}

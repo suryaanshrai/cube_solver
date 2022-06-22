@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Solution
+{% endblock %}
+
+{% block main %}
+    <p>Apply the following steps on your cube with the red side in front and yellow side on top</p>
+    {% for i in soln %}
+    {{i}}   
+    {% endfor %}
+    <p>The following key might be helpful</p>
+    <p><img src="static/key1.png"></p>
+    <p><img src="static/key2.png"></p>
+    <p><img src="static/key3.png"></p>
+    <button action="/"> Solved it! </button>
+{% endblock %}

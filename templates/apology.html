@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    ERROR
+{% endblock %}
+
+{% block main %}
+    <p>{{message}}</p>
+    <img src="static/duck.jpg" style="width: 50%;">
+    <button type="button" onclick="javascript:history.back()">Back</button> 
+{% endblock %}
