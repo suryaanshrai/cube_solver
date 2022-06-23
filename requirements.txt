@@ -1,4 +1,4 @@
 rubik_solver
 flask
-opencv
+opencv-contrib-python
 
