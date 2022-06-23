@@ -2,11 +2,13 @@
 {% block inMain %}
     Input Red Side with the Yellow side on top
     <form action="/inred" method="post">
+        <p>
         <input accept="image/" capture="environment" name="red" type="file">
-        <button type="submit">Submit</button>
-    </form>
-    <form action="/inred" method="post">
+        <button class="btn btn-primary btn-lg" type="submit">Submit</button>
+        </p>
+        <p>
         <input name="sred" type="text">
-        <button type="submit">Submit</button>
+        <button class="btn btn-primary btn-lg" type="submit">Submit</button>
+        </p>
     </form>
 {% endblock %}
