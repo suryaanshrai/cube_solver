@@ -1,12 +1,13 @@
 from flask import Flask, redirect, render_template, request
 import cv2 as cv
 
+# The rubik_package is based on an older version of python. The following lines avoid any errors arising from that. 
 import collections.abc
-#hyper needs the four following aliases to be done manually.
 collections.Iterable = collections.abc.Iterable
 collections.Mapping = collections.abc.Mapping
 collections.MutableSet = collections.abc.MutableSet
 collections.MutableMapping = collections.abc.MutableMapping
+
 from rubik_solver import utils
 
 app = Flask(__name__)
@@ -145,11 +146,11 @@ def inwhite():
 
 @app.route("/solution", methods=["GET", "POST"])
 def solution():
-    try:
-        cube = syellow + sblue + sred + sgreen + sorange + swhite
-        soln = utils.solve(cube, 'Kociemba')
-    except:
-        return apology("Oops! something went wrong. Try again")
+    # try:
+    cube = syellow + sblue + sred + sgreen + sorange + swhite
+    soln = utils.solve(cube, 'Kociemba')
+    # except:
+    #     return apology("Oops! something went wrong. Try again")
     return render_template("solution.html", soln=soln)
 
     """
