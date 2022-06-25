@@ -1,14 +1,24 @@
 {% extends "inputLayout.html" %}
-{% block inMain %}
+
+{% block inhead %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function(){
+            document.getElementById('submitButton').addEventListener('click', function(){
+                document.getElementById('loadScreen').innerHTML="<div class=\"spinner-border text-primary\" role=\"status\"><span class=\"sr-only\"></span></div>";
+                document.getElementById('loadText').innerHTML="Loading Solution"
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block inMain%}
     Input White Side with the Red side on top
     <form action="/inwhite" method="post">
         <p>
-        <input accept="image/" capture="environment" name="white" type="file">
-        <button class="btn btn-primary btn-lg" type="submit">Submit</button>
-        </p>
-        <p>
         <input name="swhite" type="text">
-        <button class="btn btn-primary btn-lg" type="submit">Submit</button>
+        <button class="btn btn-danger" id="submitButton" type="submit">Solve!</button>
         </p>
+        <p id="loadScreen"></p>
+        <p id="loadText"></p>
     </form>
 {% endblock %}

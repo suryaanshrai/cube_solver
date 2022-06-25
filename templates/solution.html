@@ -4,16 +4,121 @@
     Solution
 {% endblock %}
 
+{% block inhead %}
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        let moveText = document.querySelector('#moveText');
+        let next = document.querySelector('#nextMove');
+        let prev = document.querySelector('#prevMove');
+        let movesLeft = document.querySelector('#movesLeft');
+        let moves= "{{soln}}";
+        let len = {{len}};
+        let i = 0;
+
+        function converter(x){
+            switch(x){
+                case "F":   return "F"; break;
+                case "B":   return "B"; break;
+                case "L":   return "L"; break;
+                case "R":   return "R"; break;
+                case "U":   return "U"; break;
+                case "D":   return "D"; break;
+
+                case "f":   return "F\'"; break;
+                case "b":   return "B\'"; break;
+                case "l":   return "L\'"; break;
+                case "r":   return "R\'"; break;
+                case "u":   return "U\'"; break;
+                case "d":   return "D\'"; break;
+
+                case "g":   return "F2"; break;
+                case "c":   return "B2"; break;
+                case "m":   return "L2"; break;
+                case "s":   return "R2"; break;
+                case "v":   return "U2"; break;
+                case "e":   return "D2"; break;
+                
+                default: return "apple";
+            }
+        }
+
+        function update(){
+            let x = converter(moves.substr(i,1));
+            moveText.innerHTML = x;
+            movesLeft.innerHTML = "Moves Left: " + String(len-i -1);
+        }
+
+        next.addEventListener('click', function(){
+            i++;
+            if (i === len)
+            {
+                //write some code to congratulate on solving the cube
+                i = len - 1;
+                return;
+            }
+            update();
+        });
+
+        prev.addEventListener('click', function(){
+            i--;
+            if (i === -1)
+            {
+                i = 0;
+                return;
+            }
+            update();
+        });
+    });
+</script>
+{% endblock %}
+
 {% block main %}
-    <p>Apply the following steps on your cube with the red side in front and yellow side on top</p>
-    {% for i in soln %}
-    {{i}}   
-    {% endfor %}
-    <p>The following key might be helpful</p>
-    <p><img src="static/key1.png"></p>
-    <p><img src="static/key2.png"></p>
-    <p><img src="static/key3.png"></p>
-    <form action="/">
-        <button class="btn btn-primary btn-lg" type="submit"> Solved it! </button>
-    </form>
+    <p id="SolnMessage">Hold your cube as shown (with red side in front and yellow side
+         on top) and apply the following moves </p>
+    <h1 id="moveText">{{first}}</h1>
+    
+    <button class="btn btn-light" id="prevMove" style="margin-right:25px"><img src="/static/leftArrow.png" width="50" hieght="50"></button>
+    <button class="btn btn-light" id="nextMove" style="margin-left:25px"><img src="/static/rightArrow.png" width="50" hieght="50"></button>
+
+    <h2 id="movesLeft" style="margin-top:10px"> Moves Left:{{len - 1}}</h2>
+
+    <table>
+        <tr>
+            <td><video autoplay loop hieght="37.5%" muted width="50%">
+                <source src="../static/moves/F.mp4" type="video/mp4">
+            </video></td>
+            <td><video autoplay loop hieght="37.5%%" muted width="50%">
+                <source src="../static/moves/B.mp4" type="video/mp4">
+            </video></td>
+        </tr>
+        <tr>
+            <td>F</td>
+            <td>B</td>
+        </tr>
+        <tr>
+            <td><video autoplay loop hieght="37.5%%" muted width="50%">
+                <source src="../static/moves/L.mp4" type="video/mp4">
+            </video></td>
+            <td><video autoplay loop hieght="37.5%" muted width="50%">
+                <source src="../static/moves/R.mp4" type="video/mp4">
+            </video></td>
+        </tr>
+        <tr>
+            <td>L</td>
+            <td>R</td>
+        </tr>
+        <tr>
+            <td><video autoplay loop hieght="37.5%" muted width="50%">
+                <source src="../static/moves/D.mp4" type="video/mp4">
+            </video></td>
+            <td><video autoplay loop hieght="37.5%" muted width="50%">
+                <source src="../static/moves/U.mp4" type="video/mp4">
+            </video></td>
+        </tr>
+        <tr>
+            <td>D</td>
+            <td>U</td>
+        </tr>
+    </table>
+    <p id="footAlert">Moves with a ' (such as F') needs to be performed in the opposite direction as shown.</p>
 {% endblock %}

@@ -15,15 +15,18 @@ app = Flask(__name__)
 def apology(message):
     return render_template("apology.html", message=message)
 
+def convert(x):
+    cmoves = {
+            "F":"F", "B":"B", "L":"L", "R":"R","U":"U", "D":"D",
+            "F\'":"f","B\'":"b", "L\'":"l", "R\'":"r", "U\'":"u", "D\'":"d",
+            "F2":"g", "B2":"c", "L2":"m", "R2":"s", "U2":"v", "D2":"e"
+            }
+    return cmoves[x]
+        
+
 @app.route("/")
 def index():
     return render_template("index.html")
-
-@app.route("/input", methods=["GET", "POST"])
-def input():
-    if request.method == "POST":
-        return redirect("/inyellow")
-    return render_template("input.html")
 
 @app.route("/inyellow", methods=["GET", "POST"])
 def inyellow():
@@ -146,12 +149,15 @@ def inwhite():
 
 @app.route("/solution", methods=["GET", "POST"])
 def solution():
-    # try:
-    cube = syellow + sblue + sred + sgreen + sorange + swhite
+    try:
+        cube = syellow + sblue + sred + sgreen + sorange + swhite
+    except:
+        return apology("Input Error. Try inputing the cube again.")
     soln = utils.solve(cube, 'Kociemba')
-    # except:
-    #     return apology("Oops! something went wrong. Try again")
-    return render_template("solution.html", soln=soln)
+    solnString = ""
+    for i in soln:
+        solnString += str(convert(str(i)))
+    return render_template("solution.html", soln=solnString, len=len(soln), first=str(soln[0]))
 
     """
     wgyoybwgo
