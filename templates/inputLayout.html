@@ -1,9 +1,59 @@
 {% extends "layout.html" %}
+
+{% block inhead %}
+    <script>
+        //shows user their input
+        function giveColor(x){
+            switch(x){
+                case 'y':   return "yellow"; break;
+                case 'w':   return "white"; break;
+                case 'r':   return "red"; break;
+                case 'o':   return "orange"; break;
+                case 'g':   return "green"; break;
+                case 'b':   return "blue"; break;
+            }
+        }
+        function showSide(){
+            let sideForm = document.getElementById('sideForm');
+            let side = sideForm['sideString'].value;
+            if (side.length != 9){
+                return;
+            }
+            for(let i = 0; i < 9; i++){
+                let id ='p'+(i+1).toString();
+                let peice = document.getElementById(id);
+                peice.innerHTML=side.substr(i,1);
+                peice.setAttribute("style", "border:1px solid black; background-color:"+giveColor(side.substr(i,1))+";height:1.5cm;width:1.5cm");
+            }
+        }
+    </script>
+{% endblock %}
+
 {% block title %}
     Input
-    <p> Submit an image or enter manually </p>
 {% endblock %}
 {% block main %}
+    <p>For each square, enter the first letter of the color (like 'y' for Yellow)</p>
     {% block inMain %}{% endblock %}
-    <button class="btn btn-primary btn-lg" type="button" onclick="javascript:history.back()">Back</button>
+    <p style="margin-top:5px;">
+        <button class="btn btn-info" onclick="showSide()">Check Side</button>
+        <button class="btn btn-primary btn-sm" type="button" onclick="javascript:history.back()">Back</button>
+    </p>
+    <table id="side" style="margin-left:auto;margin-right:auto">
+        <tr>
+            <td id="p1"></td>
+            <td id="p2"></td>
+            <td id="p3"></td>
+        </tr>
+        <tr>
+            <td id="p4"></td>
+            <td id="p5"></td>
+            <td id="p6"></td>
+        </tr>
+        <tr>
+            <td id="p7"></td>
+            <td id="p8"></td>
+            <td id="p9"></td>
+        </tr>
+    </table>
 {% endblock %}

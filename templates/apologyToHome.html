@@ -7,5 +7,7 @@
 {% block main %}
     <p>{{message}}</p>
     <img src="static/duck.jpg" style="max-width: 50%;">
-    <p>    <button class="btn btn-primary btn-lg" type="button" onclick="javascript:history.back()">Go Back</button>  </p>
+    <form action="/inyellow">
+        <p>    <button class="btn btn-primary btn-lg" type="submit"> Submit Again</button>  </p>
+    </form>
 {% endblock %}

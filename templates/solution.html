@@ -52,7 +52,6 @@
             i++;
             if (i === len)
             {
-                //write some code to congratulate on solving the cube
                 i = len - 1;
                 return;
             }
@@ -79,7 +78,6 @@
     
     <button class="btn btn-light" id="prevMove" style="margin-right:25px"><img src="/static/leftArrow.png" width="50" hieght="50"></button>
     <button class="btn btn-light" id="nextMove" style="margin-left:25px"><img src="/static/rightArrow.png" width="50" hieght="50"></button>
-
     <h2 id="movesLeft" style="margin-top:10px"> Moves Left:{{len - 1}}</h2>
 
     <table>
@@ -120,5 +118,10 @@
             <td>U</td>
         </tr>
     </table>
+    <btn
     <p id="footAlert">Moves with a ' (such as F') needs to be performed in the opposite direction as shown.</p>
+    
+    <form action="/">
+        <button type="submit" class="btn btn-outline-success">Back Home</button>
+    </form>
 {% endblock %}

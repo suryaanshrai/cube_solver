@@ -1,10 +1,11 @@
 {% extends "inputLayout.html" %}
+
 {% block inMain %}
-    Input Orange Side with the Yellow side on top
-    <form action="/inorange" method="post">
+    <p style="font-size:large">Input Orange Side with the Yellow side on top</p>
+    <form action="/inorange" id="sideForm" method="post">
         <p>
-        <input name="sorange" type="text">
-        <button class="btn btn-success" type="submit">Next Color</button>
+            <input autofocus autocomplete="off" name="sorange" id="sideString" type="text">
         </p>
+    <button class="btn btn-success" type="submit">Next Color</button>
     </form>
 {% endblock %}

@@ -1,6 +1,15 @@
 {% extends "inputLayout.html" %}
 
-{% block inhead %}
+{% block inMain%}
+    <p style="font-size:large">Input White Side with the Red side on top</p>
+    <form action="/inwhite" id="sideForm" method="post">
+        <p>
+            <input autofocus autocomplete="off" name="swhite" id="sideString" type="text">
+        </p>
+    <button class="btn btn-danger" id="submitButton" type="submit">Solve!</button>
+    </form>
+    <p id="loadScreen" style="margin-top:15px"></p>
+    <p id="loadText"></p>
     <script>
         document.addEventListener("DOMContentLoaded", function(){
             document.getElementById('submitButton').addEventListener('click', function(){
@@ -9,16 +18,4 @@
             });
         });
     </script>
-{% endblock %}
-
-{% block inMain%}
-    Input White Side with the Red side on top
-    <form action="/inwhite" method="post">
-        <p>
-        <input name="swhite" type="text">
-        <button class="btn btn-danger" id="submitButton" type="submit">Solve!</button>
-        </p>
-        <p id="loadScreen"></p>
-        <p id="loadText"></p>
-    </form>
 {% endblock %}
