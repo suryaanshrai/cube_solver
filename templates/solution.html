@@ -78,9 +78,9 @@
     
     <button class="btn btn-light" id="prevMove" style="margin-right:25px"><img src="/static/leftArrow.png" width="50" hieght="50"></button>
     <button class="btn btn-light" id="nextMove" style="margin-left:25px"><img src="/static/rightArrow.png" width="50" hieght="50"></button>
-    <h2 id="movesLeft" style="margin-top:10px"> Moves Left:{{len - 1}}</h2>
+    <h2 id="movesLeft" style="margin-top:10px"> Moves Left: {{len - 1}}</h2>
 
-    <table>
+    <table style="margin-left:auto; margin-right:auto">
         <tr>
             <td><video autoplay loop hieght="37.5%" muted width="50%">
                 <source src="../static/moves/F.mp4" type="video/mp4">
@@ -124,4 +124,6 @@
     <form action="/">
         <button type="submit" class="btn btn-outline-success">Back Home</button>
     </form>
+
+    <p style="font-size:small; margin-top:3in;">Site Developed By Suryaansh Rai</p>
 {% endblock %}
