@@ -16,6 +16,7 @@
         function showSide(){
             let sideForm = document.getElementById('sideForm');
             let side = sideForm['sideString'].value;
+            side = side.toLowerCase();
             if (side.length != 9){
                 return;
             }
@@ -33,7 +34,6 @@
     Input
 {% endblock %}
 {% block main %}
-    <p style="background:#FFFFCC">For each square, enter the first letter of the color (like 'y' for Yellow)</p>
     {% block inMain %}{% endblock %}
     <p style="margin-top:5px;">
         <button class="btn btn-info" onclick="showSide()">Check Side</button>

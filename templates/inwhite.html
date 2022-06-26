@@ -1,12 +1,13 @@
 {% extends "inputLayout.html" %}
 
 {% block inMain%}
-    <p style="font-size:large">Input White Side with the Red side on top</p>
+    <p style="font-size:large; font-weight:bold;">Input White Side with the Red side on top</p>
     <form action="/inwhite" id="sideForm" method="post">
         <p>
             <input autofocus autocomplete="off" name="swhite" id="sideString" type="text">
         </p>
     <button class="btn btn-danger" id="submitButton" type="submit">Solve!</button>
+    <p style="background:#FFFFCC; margin-top:5px;">For each square, enter the first letter of the color (like 'y' for Yellow)</p>
     </form>
     <p id="loadScreen" style="margin-top:15px"></p>
     <p id="loadText"></p>
