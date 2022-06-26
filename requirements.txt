@@ -1,4 +1,2 @@
-rubik_solver
-flask
-opencv-contrib-python
-
+Flask==2.0.1
+rubik_solver==0.2.0
