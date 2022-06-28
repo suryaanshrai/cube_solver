@@ -1,13 +1,5 @@
 from flask import Flask, redirect, render_template, request
-
-# The rubik_package is based on an older version of python. The following lines avoid any errors arising from that. 
-import collections.abc
-collections.Iterable = collections.abc.Iterable
-collections.Mapping = collections.abc.Mapping
-collections.MutableSet = collections.abc.MutableSet
-collections.MutableMapping = collections.abc.MutableMapping
-
-from rubik_solver import utils
+import kociemba
 
 app = Flask(__name__)
 
@@ -25,6 +17,13 @@ def convert(x):
             }
     return cmoves[x]
         
+def convertCube(cube):
+    cube = cube.upper()
+    converted = ""
+    cube_map = {"Y":"U", "B":"L", "R":"F", "G":"R", "O":"B", "W":"D"}
+    for i in cube:
+        converted += cube_map[i]
+    return converted
 
 @app.route("/")
 def index():
@@ -128,20 +127,12 @@ def inwhite():
 @app.route("/solution", methods=["GET", "POST"])
 def solution():
     try:
-        cube = syellow + sblue + sred + sgreen + sorange + swhite
-        soln = utils.solve(cube, 'Kociemba')
+        cube = syellow + sgreen + sred + swhite + sblue + sorange
+        cube = convertCube(cube)
+        soln = kociemba.solve(cube).split()
     except:
-        return apologyToHome("Input Error. Try inputing the cube again.")
+       return apologyToHome("Input Error. Try inputing the cube again.")
     solnString = ""
     for i in soln:
         solnString += str(convert(str(i)))
     return render_template("solution.html", soln=solnString, len=len(soln), first=str(soln[0]))
-
-    """
-    wgyoybwgo
-    ryowbwbrb
-    goworgoyo
-    bobygwgyg
-    rwgborrrw
-    ybybwrrgy
-    """
