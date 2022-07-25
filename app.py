@@ -6,8 +6,6 @@ app = Flask(__name__)
 def apology(message):
     return render_template("apology.html", message=message)
 
-def apologyToHome(message):
-    return render_template("apologyToHome.html", message=message)
 
 def convert(x):
     cmoves = {
@@ -29,110 +27,29 @@ def convertCube(cube):
 def index():
     return render_template("index.html")
 
-@app.route("/inyellow", methods=["GET", "POST"])
-def inyellow():
+
+@app.route("/input", methods=["GET", "POST"])
+def input():
     if request.method == "POST":
-        if not request.form.get("syellow"):
-            return apology("Input Required.")
-        global syellow
-        syellow = request.form.get("syellow").strip().upper()
-        if len(syellow) != 9:
-            return apology("Not all colors were filled, try submitting again")
-        for i in syellow:
-            if i not in ['W', 'Y', 'G', 'B', 'R', 'O']:
-                return apology("Some colors were not correct, try submitting again")
-        return redirect("/inblue")
-    return render_template("inyellow.html")
+        try:
+            yellow = str(request.form.get("yellow"))
+            green = str(request.form.get("green"))
+            red = str(request.form.get("red"))
+            white = str(request.form.get("white"))
+            blue = str(request.form.get("blue"))
+            orange = str(request.form.get("orange"))
+            
+            cube = yellow + green + red + white + blue + orange
+            cube = convertCube(cube)
+            soln = kociemba.solve(cube).split()
+        except:
+            return apology("Input Error. Try inputing the cube again.")
+        solnString = ""
+        for i in soln:
+            solnString += str(convert(str(i)))
+        return render_template("solution.html", soln=solnString, len=len(soln), first=str(soln[0]))
+    return render_template("input.html")
 
-
-@app.route("/inblue", methods=["GET", "POST"])
-def inblue():
-    if request.method == "POST":
-        if not request.form.get("sblue"):
-            return apology("Input Required.")
-        global sblue
-        sblue = request.form.get("sblue").strip().upper()
-        if len(sblue) != 9:
-            return apology("Not all colors were filled, try submitting again")
-        for i in sblue:
-            if i not in ['W', 'Y', 'G', 'B', 'R', 'O']:
-                return apology("Some colors were not correct, try submitting again")
-        return redirect("/inred")
-    return render_template("inblue.html")
-
-
-@app.route("/inred", methods=["GET", "POST"])
-def inred():
-    if request.method == "POST":
-        if not request.form.get("sred"):
-            return apology("Input Required.")
-        global sred
-        sred = request.form.get("sred").strip().upper()
-        if len(sred) != 9:
-            return apology("Not all colors were filled, try submitting again")
-        for i in sred:
-            if i not in ['W', 'Y', 'G', 'B', 'R', 'O']:
-                return apology("Some colors were not correct, try submitting again")
-        return redirect("/ingreen")
-    return render_template("inred.html")
-
-
-@app.route("/ingreen", methods=["GET", "POST"])
-def ingreen():
-    if request.method == "POST":
-        if not request.form.get("sgreen"):
-            return apology("Input Required.")
-        global sgreen
-        sgreen = request.form.get("sgreen").strip().upper()
-        if len(sgreen) != 9:
-            return apology("Not all colors were filled, try submitting again")
-        for i in sgreen:
-            if i not in ['W', 'Y', 'G', 'B', 'R', 'O']:
-                return apology("Some colors were not correct, try submitting again")
-        return redirect("/inorange")
-    return render_template("ingreen.html")
-
-
-@app.route("/inorange", methods=["GET", "POST"])
-def inorange():
-    if request.method == "POST":
-        if not request.form.get("sorange"):
-            return apology("Input Required.")
-        global sorange
-        sorange = request.form.get("sorange").strip().upper()
-        if len(sorange) != 9:
-            return apology("Not all colors were filled, try submitting again")
-        for i in sorange:
-            if i not in ['W', 'Y', 'G', 'B', 'R', 'O']:
-                return apology("Some colors were not correct, try submitting again")
-        return redirect("/inwhite")
-    return render_template("inorange.html")
-
-
-@app.route("/inwhite", methods=["GET", "POST"])
-def inwhite():
-    if request.method == "POST":
-        if not request.form.get("swhite"):
-            return apology("Input Required.")
-        global swhite
-        swhite = request.form.get("swhite").strip().upper()
-        if len(swhite) != 9:
-            return apology("Not all colors were filled, try submitting again")
-        for i in swhite:
-            if i not in ['W', 'Y', 'G', 'B', 'R', 'O']:
-                return apology("Some colors were not correct, try submitting again")
-        return redirect("/solution")
-    return render_template("inwhite.html")
-
-@app.route("/solution", methods=["GET", "POST"])
-def solution():
-    try:
-        cube = syellow + sgreen + sred + swhite + sblue + sorange
-        cube = convertCube(cube)
-        soln = kociemba.solve(cube).split()
-    except:
-       return apologyToHome("Input Error. Try inputing the cube again.")
-    solnString = ""
-    for i in soln:
-        solnString += str(convert(str(i)))
-    return render_template("solution.html", soln=solnString, len=len(soln), first=str(soln[0]))
+@app.route("/instructions")
+def instructions():
+    return render_template("instruction.html")

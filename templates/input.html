@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+{% block title %}
+    Input page
+{% endblock %}
+{% block main %}
+    <div class="container">
+        <form action="/input" id="cubeForm" method="post">
+            <div class="tab">
+                <input autocomplete="off" name="yellow" placeholder="Yellow with orange side on top" type="text">
+            </div>
+            <div class="tab">
+                <input autocomplete="off" name="blue" placeholder="Blue with yellow side on top" type="text">
+            </div>
+            <div class="tab">
+                <input autocomplete="off" name="red" placeholder="Red with yellow side on top" type="text">
+            </div>
+            <div class="tab">
+                <input autocomplete="off" name="green" placeholder="Green with yellow side on top" type="text">
+            </div>
+            <div class="tab">
+                <input autocomplete="off" name="orange" placeholder="Orange with yellow side on top" type="text">
+            </div>
+            <div class="tab">
+                <input autocomplete="off" name="white" placeholder="White with red side on top" type="text">
+            </div>
+            
+            <button type="button" class="btn btn-primary" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
+            <button type="button" class="btn btn-success" id="nextBtn" onclick="nextPrev(1)">Next</button>
+        </form>
+    </div>
+    <div style="text-align:center;margin-top:40px;">
+        <span class="step"></span>
+        <span class="step"></span>
+        <span class="step"></span>
+        <span class="step"></span>
+        <span class="step"></span>
+        <span class="step"></span>
+    </div>
+    <p><button type="button" class="btn btn-info"  onclick="checkSide()" style="margin-top:15px !important;">Check Side</button> </p>
+    <p id="error"></p>
+    <p id="loadScreen" style="margin-top:15px"></p>
+    <p id="loadText"></p>
+    <table id="side" style="margin-left:auto;margin-right:auto">
+    <tr>
+        <td id="p1"></td>
+            <td id="p2"></td>
+            <td id="p3"></td>
+        </tr>
+        <tr>
+            <td id="p4"></td>
+            <td id="p5"></td>
+            <td id="p6"></td>
+        </tr>
+        <tr>
+            <td id="p7"></td>
+            <td id="p8"></td>
+            <td id="p9"></td>
+        </tr>
+    </table>
+    <script src="../static/input.js"></script>
+    <p style="margin-top: 2.5in">Not sure what to do? See the instruction here:</p>
+    <form action="/instructions" target="_blank">
+        <button class="btn btn-secondary" type="submit">Instructions</button>
+    </form>
+{% endblock %}
