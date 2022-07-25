@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Instructions
+{% endblock %}
+
+{% block main %}
+    <div class="instructions">
+    <p>
+        Check out the demonstration video here
+        <a href="https://youtu.be/9vHTXn2J1tw" target="_blank"><img src="../static/youtubeLogo.png" class="linkLogo"></a>
+    <p>
+    <p> Or follow the instructions</p>
+    <h4 style="margin-top:1cm">Instructions for inputting the cube</h4>
+    <ol>
+        <li> 
+            At the input page an instruction is given, such as "yellow with orange on top". It means that, first you have to hold
+            the cube in way that orange side of the cube appears on top and you are facing the yellow side.
+        </li>
+        <li>
+            After holding the cube in the right manner, you have to enter the first letter of the color of each of the nine squares that you see on 
+            the side you are facing. Example: if the side you are facing looks like this:
+            <p><img src="../static/cube.jpg" style="max-width:2in; border-radius:10px; margin:5px"></p>
+            Then you have to enter "rrggybboy".
+        </li>
+        <li>
+            Once you have entered the letters, make sure to press the check side button and see that the cube shown on the screen
+            matches that with your own cube. Press the next side button and repeat this for all the six sides.
+        </li>
+    </ol>
+    <h4 style="margin-top:1cm">Instructions for solving the cube</h4>
+    <ol>
+        <li>
+            After inputting the cube you'll be provided with a set of moves which will be the solution of your cube.
+        </li>
+        <li>
+            Apply the move in accordance with move map given on the solution page. If the moves are not clear to you, check out a 
+            better explaination for the moves <a href="https://ruwix.com/the-rubiks-cube/notation/">here</a>. 
+        </li>
+    </ol>
+    If everything goes right, you will have a solved cube by now.
+    <div>
+{% endblock %}
