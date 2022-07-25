@@ -5,6 +5,11 @@
 The Cube-Solver web application allows users to quickly solve a rubik's cube using the Kociemba algorithm.
 Following is the description of the project, its files, and some design choices.
 
+## Differences in this and previous version:
+- Input is now taken from a single route and a single form
+- Better input interface
+- Added instructions page
+
 ## app.py
 #### **import kociemba**
 For the solving algorithm I chose to go with an external package instead of making an algorithm of my own as not only it would have been quite
