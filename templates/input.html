@@ -23,7 +23,7 @@
             <div class="tab">
                 <input autocomplete="off" name="white" placeholder="White with red side on top" type="text">
             </div>
-            
+
             <button type="button" class="btn btn-primary" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
             <button type="button" class="btn btn-success" id="nextBtn" onclick="nextPrev(1)">Next</button>
         </form>
@@ -59,7 +59,6 @@
     </table>
     <script src="../static/input.js"></script>
     <p style="margin-top: 2.5in">Not sure what to do? See the instruction here:</p>
-    <form action="/instructions" target="_blank">
-        <button class="btn btn-secondary" type="submit">Instructions</button>
-    </form>
+    <a href="/instructions" target="_blank"><button class="btn btn-secondary">Instructions</button></a>
+    <a href="/testcases" target="_blank"><button class="btn btn-secondary" style="margin:3px">Test Cases</button></a>
 {% endblock %}

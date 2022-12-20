@@ -14,7 +14,7 @@ def convert(x):
             "F2":"g", "B2":"c", "L2":"m", "R2":"s", "U2":"v", "D2":"e"
             }
     return cmoves[x]
-        
+
 def convertCube(cube):
     cube = cube.upper()
     converted = ""
@@ -38,7 +38,7 @@ def input():
             white = str(request.form.get("white"))
             blue = str(request.form.get("blue"))
             orange = str(request.form.get("orange"))
-            
+
             cube = yellow + green + red + white + blue + orange
             cube = convertCube(cube)
             soln = kociemba.solve(cube).split()
@@ -53,3 +53,7 @@ def input():
 @app.route("/instructions")
 def instructions():
     return render_template("instruction.html")
+
+@app.route("/testcases")
+def testcases():
+    return render_template("testcases.html")
