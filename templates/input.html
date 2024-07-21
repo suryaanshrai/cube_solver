@@ -3,8 +3,11 @@
     Input page
 {% endblock %}
 {% block main %}
-    <div class="container">
-        <form action="/input" id="cubeForm" method="post">
+<div style="text-align:right">
+    <a href="/input">New UI</a>
+</div>
+    <div class="container-old">
+        <form action="/input_old" id="cubeForm" method="post">
             <div class="tab">
                 <input autocomplete="off" name="yellow" placeholder="Yellow with orange side on top" type="text">
             </div>

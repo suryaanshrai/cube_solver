@@ -28,8 +28,8 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/input", methods=["GET", "POST"])
-def input():
+@app.route("/input_old", methods=["GET", "POST"])
+def input_old():
     if request.method == "POST":
         try:
             yellow = str(request.form.get("yellow"))
@@ -49,6 +49,21 @@ def input():
             solnString += str(convert(str(i)))
         return render_template("solution.html", soln=solnString, len=len(soln), first=str(soln[0]))
     return render_template("input.html")
+
+@app.route("/input", methods=["GET", "POST"])
+def input():
+    if request.method == "POST":
+        try:
+            cube = request.form.get("cube")
+            cube = convertCube(cube)
+            soln = kociemba.solve(cube).split()
+        except:
+            return render_template("input_v2.html", message="Input error. Please verify your input", cube=request.form.get("cube"))
+        solnString = ""
+        for i in soln:
+            solnString += str(convert(str(i)))
+        return render_template("solution.html", soln=solnString, len=len(soln), first=str(soln[0]))
+    return render_template("input_v2.html")
 
 @app.route("/instructions")
 def instructions():

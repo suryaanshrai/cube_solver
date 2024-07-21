@@ -72,54 +72,18 @@
 {% endblock %}
 
 {% block main %}
-    <p id="SolnMessage">Hold your cube as shown (with red side in front and yellow side
-         on top) and apply the following moves </p>
+    <p id="SolnMessage">Hold your cube with red side in front and yellow side
+         on top and apply the following moves </p>
     <h1 id="moveText">{{first}}</h1>
     
     <button class="btn btn-light" id="prevMove" style="margin-right:25px"><img src="/static/leftArrow.png" width="50" hieght="50"></button>
     <button class="btn btn-light" id="nextMove" style="margin-left:25px"><img src="/static/rightArrow.png" width="50" hieght="50"></button>
     <h2 id="movesLeft" style="margin-top:10px"> Moves Left: {{len - 1}}</h2>
-
-    <table style="margin-left:auto; margin-right:auto">
-        <tr>
-            <td><video autoplay loop hieght="37.5%" muted width="50%">
-                <source src="../static/moves/F.mp4" type="video/mp4">
-            </video></td>
-            <td><video autoplay loop hieght="37.5%%" muted width="50%">
-                <source src="../static/moves/B.mp4" type="video/mp4">
-            </video></td>
-        </tr>
-        <tr>
-            <td>F</td>
-            <td>B</td>
-        </tr>
-        <tr>
-            <td><video autoplay loop hieght="37.5%%" muted width="50%">
-                <source src="../static/moves/L.mp4" type="video/mp4">
-            </video></td>
-            <td><video autoplay loop hieght="37.5%" muted width="50%">
-                <source src="../static/moves/R.mp4" type="video/mp4">
-            </video></td>
-        </tr>
-        <tr>
-            <td>L</td>
-            <td>R</td>
-        </tr>
-        <tr>
-            <td><video autoplay loop hieght="37.5%" muted width="50%">
-                <source src="../static/moves/D.mp4" type="video/mp4">
-            </video></td>
-            <td><video autoplay loop hieght="37.5%" muted width="50%">
-                <source src="../static/moves/U.mp4" type="video/mp4">
-            </video></td>
-        </tr>
-        <tr>
-            <td>D</td>
-            <td>U</td>
-        </tr>
-    </table>
-    <p id="footAlert">Moves with a "'" (such as F') needs to be performed in the direction opposite what it is shown.</p>
-    Still not sure about the moves?
+    
+    <img src="../static/notations.jpg" style="max-width: 100%;">
+    <p>
+        Still not sure about the moves?
+    </p>
     <a href="https://ruwix.com/the-rubiks-cube/notation/" target="_blank"> Checkout the move map</a>
     <form action="/">
         <button type="submit" class="btn btn-outline-success" style="margin:10px !important">Back Home</button>

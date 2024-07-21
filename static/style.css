@@ -39,11 +39,11 @@
     border: 2px solid green;
 }
 
-.container {
+/* .container-old {
     max-width: 95%;
     border-radius: 10px;
     position: relative;
-}
+} */
 
 form input {
     max-width: 90%;
@@ -84,4 +84,33 @@ form input {
 
 .instructions {
     text-align: left !important;
+}
+
+
+
+.container {
+    display: grid; grid-template-columns: 1cm 1cm 1cm;
+}
+
+.hide {
+    display: none;
+}
+
+.peice {
+    background-color: aqua;
+    border: 1px solid black;
+    border-radius: 5px;
+    height: 1cm;
+}
+
+.peice:hover {
+    cursor: pointer;
+}
+
+.palette:hover {
+    cursor: pointer;
+}
+
+.active-color {
+    outline: 2px solid gray;
 }

@@ -1,0 +1,178 @@
+{% extends "layout.html" %}
+{% block title %}
+    Input page
+{% endblock %}
+
+{% block main %}
+
+<div style="text-align:right">
+    <a href="/input_old">Old UI</a>
+</div>
+
+<p id="loadScreen" style="margin-top:15px"></p>
+<p id="loadText"></p>
+
+{% if message %}
+    <p>{{message}}</p>
+    <script>
+        document.addEventListener("DOMContentLoaded", function(){
+            let peices = document.querySelectorAll(".peice");
+            let cubeString = "{{cube}}";
+            for (let i = 0; i < cubeString.length; i++){
+                switch(cubeString[i]){
+                    case "r":
+                        peices[i].style.backgroundColor = "red";
+                        break;
+                    case 'g':
+                        peices[i].style.backgroundColor = "green";
+                        break;
+                    case "b":
+                        peices[i].style.backgroundColor = "blue";
+                        break;
+                    case "o":
+                        peices[i].style.backgroundColor = "orange";
+                        break;
+                    case "w":
+                        peices[i].style.backgroundColor = "white";
+                        break;
+                    case "y":
+                        peices[i].style.backgroundColor = "yellow";
+                        break;
+                    default:
+                        peices[i].style.backgroundColor = "aqua";
+                        break;
+                }
+            }
+        });
+    </script>
+{% endif %}
+
+<div class="page hide">
+    <p>Hold the cube such that you face the yellow centre and the orange center is on top</p>
+    <div style="display: inline-block;">
+        <div class="container" id="yellow">
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice" style="background-color: yellow;"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+        </div>
+    </div>
+</div>
+
+<div class="page hide">
+    <p>Hold the cube such that you face the green centre and the yellow center is on top</p>
+    <div style="display: inline-block;">
+        <div class="container" id="green" >
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice" style="background-color: green;"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+        </div>
+    </div>
+</div>
+
+<div class="page hide">
+    <p>Hold the cube such that you face the red centre and the yellow center is on top</p>
+    <div style="display: inline-block;">
+        <div class="container" id="red" >
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice" style="background-color: red;"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+        </div>
+    </div>
+</div>
+
+<div class="page hide">
+    <p>Hold the cube such that you face the white centre and the red center is on top</p>
+    <div style="display: inline-block;">
+        <div class="container" id="white" >
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice" style="background-color: white;"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+        </div>
+    </div>
+</div>
+
+<div class="page hide">
+    <p>Hold the cube such that you face the blue centre and the yellow center is on top</p>
+    <div style="display: inline-block;">
+        <div class="container" id="blue" >
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice" style="background-color: blue;"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+        </div>
+    </div>
+</div>
+
+
+<div class="page hide">
+    <p>Hold the cube such that you face the orange centre and the yellow center is on top</p>
+    <div style="display: inline-block;">
+        <div class="container" id="orange" >
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice" style="background-color: orange;"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+            <div class="peice"></div>
+        </div>
+    </div>
+</div>
+
+<p style="margin-top: 1cm;">Select a peice and then choose its color</p>
+<div>
+    <div style="display: inline-block;">
+        <div style="display: grid; grid-template-columns: 1cm 1cm 1cm;">
+            <div class="palette" style="background-color: red; height: 1cm; border:1px solid black; border-radius: 5px;"></div>
+            <div class="palette" style="background-color: blue; height: 1cm; border:1px solid black; border-radius: 5px;"></div>
+            <div class="palette" style="background-color: orange; height: 1cm; border:1px solid black; border-radius: 5px;"></div>
+            <div class="palette" style="background-color: yellow; height: 1cm; border:1px solid black; border-radius: 5px;"></div>
+            <div class="palette active-color" style="background-color: white; height: 1cm; border:1px solid black; border-radius: 5px;"></div>
+            <div class="palette" style="background-color: green; height: 1cm; border:1px solid black; border-radius: 5px;"></div>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top: 1cm;">
+    <button type="button" class="btn btn-primary" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
+    <button type="button" class="btn btn-success" id="nextBtn" onclick="nextPrev(1)">Next</button>
+</div>
+
+<!-- <form method="post" action="/input">
+    <input type="text" name="cube">
+    <input type="submit">
+</form> -->
+
+<script src="../static/input_v2.js"></script>
+{% endblock %}

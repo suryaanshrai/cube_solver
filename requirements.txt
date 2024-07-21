@@ -1,3 +1,13 @@
-Flask==2.0.1
-kociemba
-gunicorn
+blinker==1.8.2
+cffi==1.16.0
+click==8.1.7
+Flask==3.0.3
+future==1.0.0
+gunicorn==22.0.0
+itsdangerous==2.2.0
+Jinja2==3.1.4
+kociemba==1.2.1
+MarkupSafe==2.1.5
+packaging==24.1
+pycparser==2.22
+Werkzeug==3.0.3
