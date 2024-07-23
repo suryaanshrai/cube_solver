@@ -1,7 +1,7 @@
 # Cube-Solver Version2
 #### Video Demo: https://youtu.be/bTjkN2u0OyQ
 #### In use: https://youtu.be/9vHTXn2J1tw
-#### Live at: https://gg-cubesolver.onrender.com/
+#### Live at: [https://gg-cubesolver.onrender.com/](https://suryaanshrai.pythonanywhere.com/)
 #### Description:
 The Cube-Solver web application allows users to quickly solve a rubik's cube using the Kociemba algorithm.
 Following is the description of the project, its files, and some design choices.
