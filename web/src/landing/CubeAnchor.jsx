@@ -16,19 +16,24 @@ import { ContactShadows } from "@react-three/drei";
 import { Euler, Quaternion, Vector3 } from "three";
 import { CubeModel } from "../three/CubeModel.jsx";
 import { StudioEnvironment, StudioLights, useRenderTier } from "../three/Studio.jsx";
-import { applySequence, SOLVED } from "../cube/moves.js";
+import { applySequence, invertMove, SOLVED } from "../cube/moves.js";
 
 /** A short, legible sequence — recognisable turns rather than a blur of motion. */
 const DEMO = ["R", "U", "R'", "U'", "F'", "U", "F", "D2", "L", "B'"];
-const SCRAMBLED = applySequence(SOLVED, DEMO.map((m) => (m.endsWith("'") ? m.slice(0, -1) : m.endsWith("2") ? m : `${m}'`)).reverse());
+/* The state DEMO solves from — the sequence run backwards off a solved cube. */
+const SCRAMBLED = applySequence(SOLVED, [...DEMO].reverse().map(invertMove));
 
 /** Per-chapter pose. Position is in world units; the camera never moves. */
 const POSE = {
+  /* Offsets are world units; the frame is roughly 6.9 wide at 16:9, so ±2.3 is the
+     outer third. Chapter copy sits on ruler A or B, and the cube takes whichever side
+     of the frame the copy does not — it must never land underneath a paragraph.
+     Only the hero carries an in-plane tilt; elsewhere it reads as a tumble. */
   hero: { rotation: [-0.4, 0.62, 0.14], scale: 0.46, offset: [1.45, 0.08, 0] },
-  aside: { rotation: [-0.5, 1.4, 0.2], scale: 0.34, offset: [-1.5, -0.25, -0.6] },
-  facing: { rotation: [0, 0, 0], scale: 0.44, offset: [1.5, 0, 0] },
-  turned: { rotation: [-0.46, -0.7, 0.1], scale: 0.45, offset: [1.5, -0.05, 0] },
-  close: { rotation: [-0.34, 0.5, 0], scale: 0.38, offset: [1.35, 0.15, -0.4] },
+  aside: { rotation: [-0.42, 0.9, 0], scale: 0.3, offset: [-3.6, -0.15, -0.6] },
+  facing: { rotation: [-0.1, 0.1, 0], scale: 0.4, offset: [1.75, 0, 0] },
+  turned: { rotation: [-0.42, -0.66, 0], scale: 0.42, offset: [1.7, -0.05, 0] },
+  close: { rotation: [-0.34, 0.5, 0], scale: 0.38, offset: [1.5, 0.15, -0.4] },
 };
 
 export const CHAPTER_POSE = ["hero", "aside", "facing", "turned", "turned", "close"];
@@ -57,6 +62,16 @@ function useDemoTurns(active) {
         return;
       }
 
+      if (phase === "solved") {
+        if (elapsed < 2200) return;
+        facelets = SCRAMBLED;
+        step = 0;
+        setState({ facelets, turn: null, step: 0 });
+        phase = "pause";
+        started = now;
+        return;
+      }
+
       const t = Math.min(1, elapsed / 520);
       const move = DEMO[step % DEMO.length];
       setState({ facelets, turn: { move, progress: 1 - (1 - t) ** 3 }, step });
@@ -64,12 +79,10 @@ function useDemoTurns(active) {
       if (t >= 1) {
         facelets = applySequence(facelets, [move]);
         step += 1;
-        if (step >= DEMO.length) {
-          facelets = SCRAMBLED;
-          step = 0;
-        }
         setState({ facelets, turn: null, step });
-        phase = "pause";
+        // Hold on the solved cube before starting over — the chapter is about watching
+        // one get solved, and cutting away a frame before it does wastes the payoff.
+        phase = step >= DEMO.length ? "solved" : "pause";
         started = now;
       }
     };
@@ -113,7 +126,7 @@ export function CubeAnchor({ chapter = 0, tier }) {
         <RigWithCube
           pose={pose}
           pointer={pointer}
-          spin={chapter === 0 || chapter === 1}
+          spin={chapter === 0}
           facelets={solving ? demo.facelets : SCRAMBLED}
           turn={solving ? demo.turn : null}
         />
@@ -146,9 +159,8 @@ function RigWithCube({ pose, pointer, spin, facelets, turn }) {
     if (spin) drift.current += delta * 0.16;
 
     const [rx, ry, rz] = POSE[pose].rotation;
-    target.setFromEuler(
-      new Euler(rx + pointer.current.y * 0.2, ry + drift.current + pointer.current.x * 0.32, rz),
-    );
+    const yaw = ry + (spin ? drift.current : 0) + pointer.current.x * 0.32;
+    target.setFromEuler(new Euler(rx + pointer.current.y * 0.2, yaw, rz));
 
     const k = 1 - Math.pow(0.0035, delta);
     node.quaternion.slerp(target, k);
