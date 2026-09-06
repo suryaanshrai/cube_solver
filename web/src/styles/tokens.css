@@ -1,0 +1,110 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   THE LOCK — Cube Solver
+   Written before any markup. Documented in /docs/art-direction.md.
+   No hex value should appear anywhere else in the codebase. Grep for `#` to check.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* ── ground ───────────────────────────────────────────────────────────── */
+  --ground: #08090b;
+  --ground-1: #0e1014;
+  --ground-2: #171a20;
+
+  /* ── ink ──────────────────────────────────────────────────────────────── */
+  --ink: #dce0e6;
+  --ink-62: rgb(220 224 230 / 0.62);
+  --ink-38: rgb(220 224 230 / 0.38);
+  --ink-18: rgb(220 224 230 / 0.18);
+  --hairline: rgb(220 224 230 / 0.1);
+  --hairline-strong: rgb(220 224 230 / 0.2);
+
+  /* ── accent — one, used in exactly three places ───────────────────────── */
+  --accent: #2be8ce;
+  --accent-62: rgb(43 232 206 / 0.62);
+  --accent-18: rgb(43 232 206 / 0.18);
+  --accent-08: rgb(43 232 206 / 0.08);
+
+  /* ── warning — not a palette colour; only ever appears on an error string */
+  --warn: #ff6b47;
+
+  /* ── cube colours: readings, not design decisions ─────────────────────── */
+  --cube-U: #f2d024; /* yellow  — up     */
+  --cube-R: #14a05a; /* green   — right  */
+  --cube-F: #d8352a; /* red     — front  */
+  --cube-D: #eceff2; /* white   — down   */
+  --cube-L: #1c5fd0; /* blue    — left   */
+  --cube-B: #eb7b1c; /* orange  — back   */
+
+  /* ── the 3D scene ─────────────────────────────────────────────────────────
+     Light temperatures and the cube's own plastic. Three.js cannot read a custom
+     property, so these are resolved at runtime by three/tokens.js — which is what
+     keeps this file the only place a colour is written down. */
+  --light-key: #fff6e8; /* warm key, upper-left, matching the CSS light source */
+  --light-fill: #9fb6d8; /* cool fill, opposite */
+  --light-rim: #dfe9ff; /* rim behind the subject */
+  --light-under: #b9c8e6; /* lower rim, picks the silhouette off the ground */
+  --plastic: #0a0b0d; /* the cube body */
+  --plastic-dim: #07080a; /* the same body, out of focus */
+
+  /* ── type ─────────────────────────────────────────────────────────────── */
+  --font-display: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", monospace;
+
+  --t-display: clamp(3.25rem, 9vw, 10.5rem);
+  --t-h1: clamp(2.25rem, 5vw, 4.5rem);
+  --t-h2: clamp(1.5rem, 2.75vw, 2.5rem);
+  --t-lead: clamp(1.0625rem, 1.4vw, 1.3125rem);
+  --t-body: 1rem;
+  --t-small: 0.8125rem;
+  --t-chrome: 0.6875rem;
+
+  --track-display: -0.035em;
+  --track-h1: -0.03em;
+  --track-h2: -0.02em;
+  --track-chrome: 0.16em;
+
+  --lead-display: 0.92;
+  --lead-h1: 1;
+  --lead-body: 1.65;
+
+  /* ── space ────────────────────────────────────────────────────────────── */
+  --margin: clamp(1.5rem, 6vw, 7rem);
+  --maxw: 1600px;
+  --space-section: clamp(6rem, 16vh, 14rem);
+  --space-block: clamp(2.5rem, 7vh, 5rem);
+  --space-tight: clamp(1rem, 2vh, 1.75rem);
+
+  /* ── rulers — every text block starts at one of these ─────────────────── */
+  --ruler-a: var(--margin);
+  --ruler-b: 38%;
+  --ruler-c: 62%;
+
+  /* ── radii — 0 or 20. never the 8–12px middle. ────────────────────────── */
+  --r-none: 0px;
+  --r-lg: 20px;
+  --r-pill: 999px;
+
+  /* ── motion ───────────────────────────────────────────────────────────── */
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-ui: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-enter: 900ms;
+  --dur-ui: 220ms;
+  --dur-turn: 460ms;
+  --stagger: 75ms;
+
+  /* ── depth ────────────────────────────────────────────────────────────── */
+  --contact-shadow: 0 24px 48px rgb(0 0 0 / 0.6);
+  --z-canvas: 0;
+  --z-content: 1;
+  --z-hud: 40;
+  --z-grain: 100;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-enter: 1ms;
+    --dur-ui: 1ms;
+    --dur-turn: 1ms;
+    --stagger: 0ms;
+  }
+}

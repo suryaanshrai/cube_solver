@@ -1,0 +1,32 @@
+{
+  "name": "cube-solver-web",
+  "private": true,
+  "version": "3.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:flow": "node tests/e2e/flow.mjs",
+    "test:scan": "node tests/e2e/scan.mjs",
+    "test:a11y": "node tests/e2e/a11y.mjs",
+    "test:shots": "node tests/e2e/shoot.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/geist": "5.3.0",
+    "@fontsource-variable/geist-mono": "5.3.0",
+    "@react-three/drei": "10.7.8",
+    "@react-three/fiber": "9.7.0",
+    "lenis": "1.3.26",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "three": "0.185.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "vite": "8.2.2",
+    "vitest": "5.0.0"
+  }
+}

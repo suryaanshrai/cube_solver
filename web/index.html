@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#08090b" />
+    <title>Cube Solver — scan a Rubik&rsquo;s cube, watch it solved</title>
+    <meta
+      name="description"
+      content="Show each face to your camera and follow the solution on a 3D model of your own cube. Kociemba&rsquo;s two-phase algorithm, about twenty moves, no notation required."
+    />
+    <meta property="og:title" content="Cube Solver" />
+    <meta
+      property="og:description"
+      content="Show each face to your camera and follow the solution on a 3D model of your own cube."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <div style="padding: 2rem; font-family: system-ui; color: #dce0e6; background: #08090b">
+        <h1>Cube Solver</h1>
+        <p>
+          Reading a cube through a camera and animating the solution both need JavaScript.
+          Please enable it to use this site.
+        </p>
+      </div>
+    </noscript>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

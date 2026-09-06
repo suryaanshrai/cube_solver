@@ -1,0 +1,264 @@
+/* The landing page. Composition first — this file describes where things sit and how
+   empty the frame stays. Every colour, size and duration comes from tokens.css. */
+
+.landing {
+  position: relative;
+  z-index: var(--z-content);
+}
+
+/* ── the anchor canvas ───────────────────────────────────────────────────────
+   Fixed behind the document, pointer-events off so it can never swallow a click
+   on a link. Nothing else on the page animates on its own account. */
+.anchor {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-canvas);
+  pointer-events: none;
+}
+
+.anchor canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ── nav — two items, because there is one thing to do here ──────────────── */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-hud);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: clamp(1.1rem, 2.4vh, 1.9rem) var(--margin);
+  mix-blend-mode: difference;
+}
+
+.nav__mark,
+.tool__home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.nav__glyph,
+.tool__mark {
+  width: 11px;
+  height: 11px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.nav__cta {
+  color: var(--ink);
+  text-decoration: none;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--hairline-strong);
+  transition: border-color var(--dur-ui) var(--ease-ui);
+}
+
+.nav__cta:hover {
+  border-color: var(--ink);
+}
+
+/* ── chapters ────────────────────────────────────────────────────────────── */
+.chapter {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding-block: var(--space-section);
+}
+
+.chapter__copy {
+  max-width: min(46ch, 46vw);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-tight);
+}
+
+.chapter__copy--centred {
+  align-items: flex-start;
+  max-width: none;
+}
+
+/* One word set back rather than italicised: the register is technical, and a serif
+   italic would be borrowed from a different one. */
+.chapter--hero .display em {
+  font-style: normal;
+  color: var(--ink-62);
+}
+
+/* The light behind the cube — a radial falloff from the key, never a linear gradient
+   at an angle, because that is how light actually behaves. */
+.chapter--hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(38% 46% at 72% 52%, rgb(38 44 56 / 0.55) 0%, transparent 70%);
+}
+
+@media (max-width: 900px) {
+  .chapter--hero::before {
+    background: radial-gradient(52% 30% at 50% 26%, rgb(38 44 56 / 0.5) 0%, transparent 72%);
+  }
+}
+
+.hero__actions {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+  flex-wrap: wrap;
+  margin-top: var(--space-tight);
+}
+
+.hero__note {
+  color: var(--ink-38);
+}
+
+.hero__scroll {
+  position: absolute;
+  bottom: clamp(1.5rem, 4vh, 2.75rem);
+  left: var(--margin);
+  writing-mode: vertical-rl;
+  color: var(--ink-38);
+}
+
+.hero__scroll::after {
+  content: "";
+  display: block;
+  width: 1px;
+  height: 3.2rem;
+  margin-top: 0.7rem;
+  margin-left: -0.5px;
+  background: linear-gradient(var(--hairline-strong), transparent);
+}
+
+/* Sections alternate dense and near-empty; two heavy screens in a row flattens the
+   pacing and exhausts the reader. */
+.chapter--problem,
+.chapter--close {
+  min-height: 92svh;
+}
+
+.chapter--close {
+  justify-content: flex-start;
+}
+
+/* ── the eyebrow / HUD strings ───────────────────────────────────────────── */
+.eyebrow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
+}
+
+.eyebrow::before {
+  content: "";
+  width: clamp(1.5rem, 4vw, 3.5rem);
+  height: 1px;
+  background: var(--hairline-strong);
+  transform: translateY(-0.28em);
+}
+
+.eyebrow__index {
+  color: var(--accent-62);
+}
+
+/* ── the call to action ──────────────────────────────────────────────────── */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.95rem 1.6rem;
+  min-height: 44px;
+  color: var(--ink);
+  text-decoration: none;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-pill);
+  background: transparent;
+  transition:
+    background-color var(--dur-ui) var(--ease-ui),
+    border-color var(--dur-ui) var(--ease-ui),
+    color var(--dur-ui) var(--ease-ui);
+}
+
+.cta svg {
+  transition: transform var(--dur-ui) var(--ease-ui);
+}
+
+.cta:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.cta:hover svg {
+  transform: translateX(4px);
+}
+
+.cta--large {
+  font-size: var(--t-lead);
+  padding: 1.15rem 2rem;
+}
+
+/* ── footer ──────────────────────────────────────────────────────────────── */
+.foot {
+  position: relative;
+  z-index: var(--z-content);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: var(--space-block) var(--margin) clamp(1.5rem, 4vh, 2.5rem);
+  border-top: 1px solid var(--hairline);
+}
+
+.foot a {
+  color: var(--ink-62);
+  text-decoration: none;
+  border-bottom: 1px solid var(--hairline-strong);
+}
+
+.foot a:hover {
+  color: var(--ink);
+}
+
+/* ── responsive: reduce, don't compress ──────────────────────────────────── */
+@media (max-width: 900px) {
+  .chapter__copy {
+    max-width: none;
+    padding-right: var(--margin);
+  }
+
+  .chapter {
+    min-height: auto;
+    padding-block: clamp(5rem, 14vh, 8rem);
+  }
+
+  /* The cube keeps the top of the hero and the type keeps the rest. The space is
+     reserved rather than hoped for, because copy that grows by one line would
+     otherwise creep up underneath the cube. */
+  .chapter--hero {
+    min-height: 100svh;
+    align-items: flex-start;
+    padding-top: 44svh;
+    padding-bottom: clamp(3rem, 10vh, 6rem);
+  }
+
+  .anchor {
+    bottom: auto;
+    height: 42svh;
+  }
+
+  .hero__scroll {
+    display: none;
+  }
+
+  .nav {
+    mix-blend-mode: normal;
+    background: linear-gradient(var(--ground), transparent);
+  }
+}

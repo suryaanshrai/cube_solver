@@ -1,0 +1,238 @@
+/* Base layer. Every value here resolves to a token from tokens.css. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scrollbar-color: var(--ink-18) transparent;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: var(--t-body);
+  line-height: var(--lead-body);
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+/* ── focus ────────────────────────────────────────────────────────────────────
+   The accent exists for exactly three things and this is one of them. Award-tier
+   sites routinely strip this and become keyboard-unusable; it stays. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+::selection {
+  background: var(--accent-18);
+  color: var(--ink);
+}
+
+/* ── type roles ───────────────────────────────────────────────────────────── */
+
+.display {
+  font-size: var(--t-display);
+  font-weight: 300;
+  letter-spacing: var(--track-display);
+  line-height: var(--lead-display);
+  text-wrap: balance;
+}
+
+.h1 {
+  font-size: var(--t-h1);
+  font-weight: 300;
+  letter-spacing: var(--track-h1);
+  line-height: var(--lead-h1);
+  text-wrap: balance;
+}
+
+.h2 {
+  font-size: var(--t-h2);
+  font-weight: 400;
+  letter-spacing: var(--track-h2);
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.lead {
+  font-size: var(--t-lead);
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+  color: var(--ink-62);
+  max-width: 45ch;
+  text-wrap: pretty;
+}
+
+.body {
+  max-width: 62ch;
+  color: var(--ink-62);
+  text-wrap: pretty;
+}
+
+/* The HUD layer: none of it is necessary, all of it signals deliberateness. */
+.chrome {
+  font-family: var(--font-mono);
+  font-size: var(--t-chrome);
+  font-weight: 500;
+  letter-spacing: var(--track-chrome);
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--ink-38);
+  font-variant-numeric: tabular-nums;
+}
+
+.chrome--lit {
+  color: var(--ink-62);
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+/* ── rulers — every text block starts at one of three x-positions ─────────── */
+
+.at-a {
+  margin-left: var(--ruler-a);
+}
+
+.at-b {
+  margin-left: max(var(--ruler-a), var(--ruler-b));
+}
+
+.at-c {
+  margin-left: max(var(--ruler-a), var(--ruler-c));
+}
+
+@media (max-width: 900px) {
+  .at-b,
+  .at-c {
+    margin-left: var(--ruler-a);
+  }
+}
+
+/* ── surfaces ─────────────────────────────────────────────────────────────── */
+
+.hairline {
+  border: 1px solid var(--hairline);
+}
+
+.rule {
+  height: 1px;
+  border: 0;
+  background: var(--hairline);
+}
+
+/* Flat digital colour reads synthetic across large areas; a few percent of noise
+   gives it material. Fixed to the viewport so it never scrolls with content. */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-grain);
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── the one recurring gesture ────────────────────────────────────────────── */
+
+/* Only hidden once JavaScript has confirmed it is here to reveal it again. Without
+   the `.js` class the page renders finished, which is also what a crawler sees. */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  clip-path: inset(0 0 100% 0);
+}
+
+.js .reveal.is-in {
+  opacity: 1;
+  transform: none;
+  clip-path: inset(0 0 -20% 0);
+  transition:
+    opacity var(--dur-enter) var(--ease-enter),
+    transform var(--dur-enter) var(--ease-enter),
+    clip-path var(--dur-enter) var(--ease-enter);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Collapse to the end state outright — never merely a shorter animation, and never
+     dependent on the observer having run. */
+  .js .reveal,
+  .js .reveal.is-in {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    transition: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  top: var(--space-tight);
+  left: var(--space-tight);
+  z-index: 200;
+  padding: 0.75rem 1.25rem;
+  background: var(--ground-1);
+  border: 1px solid var(--accent);
+  color: var(--ink);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
