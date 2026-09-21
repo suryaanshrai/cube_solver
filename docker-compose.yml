@@ -1,0 +1,13 @@
+services:
+  cube-solver:
+    build: .
+    container_name: cube-solver
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5050:5000"
+    networks:
+      - omni-net
+
+networks:
+  omni-net:
+    external: true
