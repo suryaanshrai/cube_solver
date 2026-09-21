@@ -76,7 +76,9 @@ export function useCamera({ auto = false } = {}) {
       });
 
       streamRef.current = stream;
-      // Front cameras are previewed mirrored; the sampler needs to know to undo it.
+      // Reported for callers that want to mirror the *preview* on a front camera. The
+      // sampler deliberately does not use it: the delivered frame already has the cube
+      // the right way round, and flipping it swaps every face's left and right columns.
       const facing = stream.getVideoTracks()[0]?.getSettings?.().facingMode;
       setMirrored(facing !== "environment");
 

@@ -6,7 +6,7 @@
  * these two pages does one job.
  */
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ScanFlow } from "../scan/ScanFlow.jsx";
 import { ReviewNet, blankFromSolved } from "../scan/ReviewNet.jsx";
 import { classifyCube } from "../scan/classify.js";
@@ -31,6 +31,10 @@ export function Solve() {
   const [confidence, setConfidence] = useState([]);
   const [moves, setMoves] = useState([]);
   const [error, setError] = useState(null);
+  /* Bumping this remounts ScanFlow. "Start over" is pressed *while* the scan screen is
+     already showing, so changing `stage` alone is a no-op and the scan keeps its step
+     count, its captured faces and its camera state. A fresh key is the whole reset. */
+  const [scanKey, setScanKey] = useState(0);
 
   const onScanned = useCallback((samplesByFace) => {
     try {
@@ -41,6 +45,7 @@ export function Solve() {
       setStage("review");
     } catch (e) {
       setError(e.message);
+      setScanKey((k) => k + 1);
       setStage("scan");
     }
   }, []);
@@ -57,8 +62,16 @@ export function Solve() {
     setConfidence([]);
     setMoves([]);
     setError(null);
+    setScanKey((k) => k + 1);
     setStage("scan");
   }, []);
+
+  /* Each stage is a screen of its own, and on a phone the button that moves you on sits
+     near the bottom of a long one — so without this you arrive at the next stage already
+     scrolled past its top, with the cube off-screen above you. */
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [stage]);
 
   const solve = useCallback(async () => {
     setStage("solving");
@@ -95,7 +108,13 @@ export function Solve() {
       </header>
 
       {stage === "scan" && (
-        <ScanFlow onComplete={onScanned} onManual={onManual} onCancel={restart} />
+        <ScanFlow
+          key={scanKey}
+          resume={scanKey > 0}
+          onComplete={onScanned}
+          onManual={onManual}
+          onCancel={restart}
+        />
       )}
 
       {(stage === "review" || stage === "solving") && facelets && (

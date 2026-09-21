@@ -12,7 +12,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { ContactShadows, OrbitControls } from "@react-three/drei";
 import { Vector3 } from "three";
 import { FACE_NORMAL } from "../cube/geometry.js";
-import { StudioEnvironment, StudioLights } from "./Studio.jsx";
+import { StudioEnvironment, StudioLights, useRenderTier } from "./Studio.jsx";
 
 // Far enough back that the cube reads as an object in a room rather than a texture
 // filling the frame: at fov 34 this puts it at roughly 60% of the viewport height.
@@ -74,28 +74,36 @@ export function CubeStage({
   focusFace = null,
   autoOrient = true,
   interactive = true,
-  shadows = true,
-  dpr = [1, 2],
+  shadows,
+  dpr,
   className,
   ...rest
 }) {
   const controlsRef = useRef();
   const initial = useMemo(() => HOME.toArray(), []);
 
+  /* The same capability probe the landing page's cube uses. This screen was running the
+     full-fat renderer on every phone — shadows, antialias and a 2× buffer — while the
+     probe sat unused three files away. A stuttering solve is worse than a plainer one. */
+  const tier = useRenderTier();
+  const full = tier === "full";
+  const withShadows = shadows ?? full;
+  const pixelRatio = dpr ?? (full ? [1, 2] : [1, 1.5]);
+
   return (
     <Canvas
       className={className}
-      dpr={dpr}
-      shadows={shadows}
-      gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+      dpr={pixelRatio}
+      shadows={withShadows}
+      gl={{ antialias: full, alpha: true, powerPreference: "high-performance" }}
       camera={{ position: initial, fov: 34, near: 0.1, far: 60 }}
       {...rest}
     >
       <Suspense fallback={null}>
         <StudioEnvironment />
-        <StudioLights shadows={shadows} />
+        <StudioLights shadows={withShadows} />
         {children}
-        {shadows && (
+        {withShadows && (
           <ContactShadows
             position={[0, -2.1, 0]}
             opacity={0.55}

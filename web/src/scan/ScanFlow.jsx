@@ -1,26 +1,25 @@
 /**
  * The scan screen.
  *
- * Six faces, in a fixed order, with the cube rolled between each. Three things do the
- * work here and all three are about not wasting the user's attempt:
+ * Six faces, in a fixed order, with the cube rolled between each. Four things do the work
+ * here and all four are about not wasting the user's attempt:
  *
- *   • The centre is checked live. If the wrong face is presented the screen says so by
- *     name — "expected green, seeing red" — instead of capturing something unusable.
+ *   • Nothing is captured until the reticle is looking at something cube-shaped. Colour
+ *     alone cannot tell a cube from a wall or a white t-shirt; the dark plastic between
+ *     the stickers can. See `detect.js`.
+ *   • The centre is checked live against centres already banked in this scan. If the
+ *     wrong face is presented the screen says so by name — and it can tell orange from
+ *     red under a warm bulb, which fixed hue bands cannot.
  *   • Capture waits for the reading to stop moving rather than for a timer, so it fires
  *     the instant the user holds still.
- *   • Low light and an empty reticle are named as themselves, because "couldn't read
- *     the cube" leaves someone with nothing to change.
+ *   • Every face is then shown back as the nine colours that were actually read, and has
+ *     to be accepted. A misread face costs one tap here instead of six faces of work.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { SCAN_SEQUENCE, FACE_COLOUR } from "../cube/facelets.js";
-import { coarseColour } from "./classify.js";
-import {
-  MIN_LUMINANCE,
-  MIN_SPREAD,
-  createStabilityTracker,
-  sampleFace,
-} from "./sampler.js";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { SCAN_SEQUENCE, FACES, FACE_COLOUR } from "../cube/facelets.js";
+import { detectFace, pairWarning, seedFrom } from "./detect.js";
+import { createStabilityTracker, sampleFace } from "./sampler.js";
 import { useCamera } from "./useCamera.js";
 import { useReticleSize } from "./useReticleSize.js";
 import { OrientationGhost } from "./OrientationGhost.jsx";
@@ -28,43 +27,28 @@ import { Button } from "../ui/Hud.jsx";
 
 const HOLD_MS = 620; // how long a settled reading must persist before it commits
 
-/** What the reticle should be saying right now, and whether capture may proceed. */
-function assess(reading, expectedColour) {
-  if (!reading) return { tone: "wait", text: "Starting the camera…", ready: false };
-  if (reading.luminance < MIN_LUMINANCE) {
-    return { tone: "warn", text: "Too dark to read colours — find more light", ready: false };
-  }
-  if (reading.spread < MIN_SPREAD) {
-    return { tone: "wait", text: "Fill the square with the cube face", ready: false };
-  }
+/** Colour name back to the face letter, so a reading can borrow the --cube-* tokens. */
+const COLOUR_FACE = Object.fromEntries(FACES.map((face) => [FACE_COLOUR[face], face]));
 
-  const centre = coarseColour(reading.samples[4]);
-  if (!centre) {
-    return { tone: "wait", text: "Centre the face in the square", ready: false };
-  }
-  if (centre !== expectedColour) {
-    return {
-      tone: "warn",
-      text: `Expected ${expectedColour} · seeing ${centre}`,
-      ready: false,
-    };
-  }
-  if (!reading.stable) {
-    return { tone: "wait", text: "Hold still…", ready: false };
-  }
-  return { tone: "ready", text: "Centre locked", ready: true };
-}
+const WAITING = { ok: false, tone: "wait", text: "Starting the camera…", score: 0 };
 
-export function ScanFlow({ onComplete, onManual, onCancel }) {
-  const { videoRef, status, message, mirrored, start, live } = useCamera();
+/**
+ * `resume` is set when this is a restart rather than a first visit. Starting over
+ * remounts the whole component — which is what makes the reset total — so without it the
+ * user would be sent back to the permission gate for a camera they have already allowed.
+ */
+export function ScanFlow({ onComplete, onManual, onCancel, resume = false }) {
+  const { videoRef, status, message, start, live } = useCamera({ auto: resume });
   const canvasRef = useRef(null);
   const stageRef = useRef(null);
   const trackerRef = useRef(createStabilityTracker());
-  const capturedRef = useRef({});
   const holdSince = useRef(null);
+  const flashTimer = useRef(0);
 
   const [step, setStep] = useState(0);
-  const [feedback, setFeedback] = useState({ tone: "wait", text: "Starting the camera…", ready: false });
+  const [phase, setPhase] = useState("aim"); // "aim" while hunting, "confirm" once frozen
+  const [captures, setCaptures] = useState(() => SCAN_SEQUENCE.map(() => null));
+  const [feedback, setFeedback] = useState(WAITING);
   const [hold, setHold] = useState(0);
   const [flash, setFlash] = useState(false);
 
@@ -72,27 +56,42 @@ export function ScanFlow({ onComplete, onManual, onCancel }) {
   const expected = current?.facing;
   const reticleSize = useReticleSize(videoRef, stageRef);
 
-  const commit = useCallback(
-    (samples) => {
-      capturedRef.current[SCAN_SEQUENCE[step].face] = samples;
+  /* Centres confirmed on earlier faces are ground truth for this cube in this room, and
+     are what later faces are judged against. Only faces *before* this one count, so
+     going back and retaking a face drops its seed with it. */
+  const seeds = useMemo(() => seedFrom(captures.slice(0, step)), [captures, step]);
+
+  const pending = captures[step];
+  const aiming = phase === "aim";
+
+  const capture = useCallback(
+    (frame, colours) => {
       trackerRef.current.reset();
       holdSince.current = null;
       setHold(0);
       setFlash(true);
-      setTimeout(() => setFlash(false), 260);
+      clearTimeout(flashTimer.current);
+      flashTimer.current = setTimeout(() => setFlash(false), 260);
 
-      if (step + 1 >= SCAN_SEQUENCE.length) {
-        onComplete({ ...capturedRef.current });
-      } else {
-        setStep((s) => s + 1);
-      }
+      setCaptures((prev) => {
+        const next = [...prev];
+        next[step] = {
+          face: SCAN_SEQUENCE[step].face,
+          colour: SCAN_SEQUENCE[step].facing,
+          samples: frame.samples,
+          colours: colours.map((c) => c.name),
+        };
+        return next;
+      });
+      setPhase("confirm");
     },
-    [step, onComplete],
+    [step],
   );
 
-  /* The read loop. One sample per animation frame, which is cheap: nine 11×11 patches. */
+  /* The read loop. One sample per animation frame, which is cheap: the reticle is pulled
+     once at a small working size and the arithmetic happens on that one buffer. */
   useEffect(() => {
-    if (!live) return undefined;
+    if (!live || !aiming) return undefined;
 
     let raf = 0;
     const tick = () => {
@@ -101,14 +100,14 @@ export function ScanFlow({ onComplete, onManual, onCancel }) {
       const canvas = canvasRef.current;
       if (!video || !canvas || video.readyState < 2) return;
 
-      const frame = sampleFace(video, canvas, { mirrored });
+      const frame = sampleFace(video, canvas);
       if (!frame) return;
 
       const { stable } = trackerRef.current.push(frame.samples);
-      const verdict = assess({ ...frame, stable }, expected);
+      const verdict = detectFace(frame, { expected, seeds, stable });
       setFeedback(verdict);
 
-      if (!verdict.ready) {
+      if (!verdict.ok) {
         holdSince.current = null;
         setHold(0);
         return;
@@ -117,36 +116,109 @@ export function ScanFlow({ onComplete, onManual, onCancel }) {
       if (holdSince.current == null) holdSince.current = performance.now();
       const elapsed = performance.now() - holdSince.current;
       setHold(Math.min(1, elapsed / HOLD_MS));
-      if (elapsed >= HOLD_MS) commit(frame.samples);
+      if (elapsed >= HOLD_MS) capture(frame, verdict.colours);
     };
 
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [live, mirrored, expected, commit, videoRef]);
+  }, [live, aiming, expected, seeds, capture, videoRef]);
+
+  /* Freezing the preview is what makes the confirm screen honest: the nine swatches
+     belong to the frame still on screen, not to whatever the camera has moved on to. */
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !live) return;
+    if (aiming) video.play().catch(() => {});
+    else video.pause();
+  }, [aiming, live, videoRef]);
 
   useEffect(() => {
     trackerRef.current.reset();
     holdSince.current = null;
     setHold(0);
-    setFeedback({ tone: "wait", text: "Line up the next face…", ready: false });
+    if (phase === "aim") setFeedback({ ...WAITING, text: "Line up the next face…" });
+  }, [step, phase]);
+
+  useEffect(() => () => clearTimeout(flashTimer.current), []);
+
+  const accept = useCallback(() => {
+    if (!pending) return;
+    if (step + 1 >= SCAN_SEQUENCE.length) {
+      const byFace = {};
+      for (const capture_ of captures) {
+        if (capture_) byFace[capture_.face] = capture_.samples;
+      }
+      onComplete(byFace);
+      return;
+    }
+    setStep((s) => s + 1);
+    setPhase("aim");
+  }, [pending, step, captures, onComplete]);
+
+  const retake = useCallback(() => {
+    setCaptures((prev) => {
+      const next = [...prev];
+      next[step] = null;
+      return next;
+    });
+    setPhase("aim");
   }, [step]);
 
-  /* Space captures manually, for anyone the automatic path doesn't suit. */
+  const back = useCallback(() => {
+    if (step === 0) return;
+    setCaptures((prev) => {
+      const next = [...prev];
+      next[step] = null;
+      next[step - 1] = null;
+      return next;
+    });
+    setStep((s) => s - 1);
+    setPhase("aim");
+  }, [step]);
+
+  /* Space captures without waiting out the hold — but through the same gate, never
+     around it. A keystroke that skipped the checks was how unusable frames got in. */
   useEffect(() => {
     const onKey = (event) => {
-      if (event.key !== " " || !live) return;
-      event.preventDefault();
-      const frame = sampleFace(videoRef.current, canvasRef.current, { mirrored });
-      if (frame) commit(frame.samples);
+      if (!live) return;
+      if (phase === "confirm") {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          accept();
+        } else if (event.key === "Escape") {
+          event.preventDefault();
+          retake();
+        }
+        return;
+      }
+      if (event.key === " " && feedback.ok) {
+        event.preventDefault();
+        const frame = sampleFace(videoRef.current, canvasRef.current);
+        if (!frame) return;
+        const verdict = detectFace(frame, { expected, seeds, stable: true });
+        if (verdict.ok) capture(frame, verdict.colours);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [live, mirrored, commit, videoRef]);
+  }, [live, phase, feedback.ok, expected, seeds, capture, accept, retake, videoRef]);
+
+  const captureNow = () => {
+    const frame = sampleFace(videoRef.current, canvasRef.current);
+    if (!frame) return;
+    const verdict = detectFace(frame, { expected, seeds, stable: true });
+    if (verdict.ok) capture(frame, verdict.colours);
+  };
 
   const blocked = status === "denied" || status === "unavailable";
+  const last = step + 1 >= SCAN_SEQUENCE.length;
+  const warning = last && pending ? pairWarning(seedFrom(captures)) : null;
 
   return (
-    <section className={`scan ${live ? "scan--live" : ""}`} aria-label="Scan your cube">
+    <section
+      className={`scan ${live ? "scan--live" : ""} ${aiming ? "" : "scan--frozen"}`}
+      aria-label="Scan your cube"
+    >
       <div className="scan__stage" ref={stageRef}>
         <video ref={videoRef} className="scan__video" playsInline muted aria-hidden="true" />
         <canvas ref={canvasRef} className="sr-only" aria-hidden="true" />
@@ -220,25 +292,79 @@ export function ScanFlow({ onComplete, onManual, onCancel }) {
             </p>
           </header>
 
-          <OrientationGhost facing={current.facing} up={current.up} />
+          {aiming ? (
+            <>
+              <OrientationGhost facing={current.facing} up={current.up} />
 
-          <div className="scan__coach-copy">
-            <h2 className="h2">{current.hint}</h2>
-            {current.roll && <p className="body scan__roll">{current.roll}</p>}
-          </div>
+              <div className="scan__coach-copy">
+                <h2 className="h2">{current.hint}</h2>
+                {current.roll && <p className="body scan__roll">{current.roll}</p>}
+              </div>
 
-          <p className={`scan__verdict scan__verdict--${feedback.tone}`} role="status" aria-live="polite">
-            {feedback.text}
-          </p>
+              <p
+                className={`scan__verdict scan__verdict--${feedback.tone}`}
+                role="status"
+                aria-live="polite"
+              >
+                {feedback.text}
+              </p>
 
-          <p className="chrome scan__hint">
-            Hold steady and it captures itself · Space captures now
-          </p>
+              <div className="scan__coach-actions">
+                <Button variant="accent" onClick={captureNow} disabled={!feedback.ok}>
+                  Capture now
+                </Button>
+                <Button onClick={back} disabled={step === 0}>
+                  Back
+                </Button>
+              </div>
 
-          <div className="scan__coach-actions">
-            <Button onClick={onCancel}>Start over</Button>
-            <Button onClick={onManual}>Enter by hand</Button>
-          </div>
+              <div className="scan__coach-actions scan__coach-actions--quiet">
+                <Button onClick={onCancel}>Start over</Button>
+                <Button onClick={onManual}>Enter by hand</Button>
+              </div>
+
+              <p className="chrome scan__hint">
+                Hold steady and it captures itself
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="scan__read" aria-hidden="true">
+                {(pending?.colours ?? []).map((name, i) => (
+                  <span
+                    key={i}
+                    className={`sticker ${i === 4 ? "sticker--centre" : ""}`}
+                    style={{ "--sticker": `var(--cube-${COLOUR_FACE[name] ?? "D"})` }}
+                  />
+                ))}
+              </div>
+
+              <div className="scan__coach-copy">
+                <h2 className="h2">Did it read this face right?</h2>
+                <p className="body" role="status" aria-live="polite">
+                  Nine colours, as the camera read them. If any square is the wrong
+                  colour, retake it — a wrong face here is a wrong solve later.
+                </p>
+                {warning && <p className="notice notice--warn">{warning}</p>}
+              </div>
+
+              <div className="scan__coach-actions">
+                <Button variant="accent" onClick={accept}>
+                  {last ? "Looks right — finish" : "Looks right — next face"}
+                </Button>
+                <Button onClick={retake}>Retake</Button>
+              </div>
+
+              <div className="scan__coach-actions scan__coach-actions--quiet">
+                <Button onClick={back} disabled={step === 0}>
+                  Back a face
+                </Button>
+                <Button onClick={onCancel}>Start over</Button>
+              </div>
+
+              <p className="chrome scan__hint">Enter accepts · Esc retakes</p>
+            </>
+          )}
         </aside>
       )}
     </section>

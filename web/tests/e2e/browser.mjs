@@ -7,6 +7,10 @@
  *
  * SwiftShader is requested so the scripts run on machines with no GPU. It is slow, which
  * is why the assertions wait for state rather than for durations.
+ *
+ * The full Chromium build is asked for by name rather than Playwright's default headless
+ * shell, which has no implementation of `--use-file-for-fake-video-capture`: on the shell
+ * getUserMedia simply fails and the scan scripts see a camera-unavailable screen.
  */
 
 import { chromium } from "@playwright/test";
@@ -26,7 +30,9 @@ export function outDir() {
 
 export function launch(extraArgs = []) {
   return chromium.launch({
-    ...(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}),
+    ...(process.env.CHROMIUM_PATH
+      ? { executablePath: process.env.CHROMIUM_PATH }
+      : { channel: "chromium" }),
     args: [
       "--use-gl=angle",
       "--use-angle=swiftshader",

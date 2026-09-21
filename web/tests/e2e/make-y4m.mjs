@@ -17,7 +17,7 @@ const rgbToYuv = ([r, g, b]) => [
 ];
 
 /** @param {number[][]} grid nine [r,g,b], row-major */
-export function renderFace(grid, path) {
+export function renderFace(grid, path, { gap = 10, background = [18, 18, 20] } = {}) {
   const rgb = new Uint8Array(W * H * 3);
   const tile = 300; // fills the 62% reticle at this frame size
   const x0 = (W - tile) / 2;
@@ -27,16 +27,15 @@ export function renderFace(grid, path) {
   for (let y = 0; y < H; y += 1) {
     for (let x = 0; x < W; x += 1) {
       const inside = x >= x0 && x < x0 + tile && y >= y0 && y < y0 + tile;
-      let colour = [18, 18, 20]; // the table behind the cube
+      let colour = background; // the table behind the cube
       if (inside) {
         const col = Math.min(2, Math.floor((x - x0) / cell));
         const row = Math.min(2, Math.floor((y - y0) / cell));
         // A dark gap between stickers, as a real cube has.
         const gx = (x - x0) % cell;
         const gy = (y - y0) % cell;
-        const gap = 10;
         colour =
-          gx < gap || gy < gap || gx > cell - gap || gy > cell - gap
+          gap && (gx < gap || gy < gap || gx > cell - gap || gy > cell - gap)
             ? [12, 12, 14]
             : grid[row * 3 + col];
       }
@@ -69,6 +68,11 @@ export function renderFace(grid, path) {
   }
   writeFileSync(path, Buffer.concat(chunks));
   return path;
+}
+
+/** A flat field with no cube in it — a wall, a shirt, a sheet of paper. */
+export function renderFlat(colour, out) {
+  return renderFace(Array(9).fill(colour), out, { gap: 0, background: colour });
 }
 
 const YELLOW = [242, 208, 36];

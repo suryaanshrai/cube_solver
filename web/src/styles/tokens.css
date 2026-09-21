@@ -28,6 +28,9 @@
   --warn: #ff6b47;
 
   /* ── cube colours: readings, not design decisions ─────────────────────── */
+  /* Height of the fixed nav, so snap points can clear it. */
+  --nav-h: 4.5rem;
+
   --cube-U: #f2d024; /* yellow  — up     */
   --cube-R: #14a05a; /* green   — right  */
   --cube-F: #d8352a; /* red     — front  */

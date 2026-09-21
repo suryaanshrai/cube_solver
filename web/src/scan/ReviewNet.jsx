@@ -17,8 +17,8 @@ import { validateCube } from "../cube/validate.js";
 import { UNCERTAIN_MARGIN } from "./classify.js";
 import { Button } from "../ui/Hud.jsx";
 
-/* Where each face sits in the unfolded net — column and row of a 4×3 grid. */
-const NET_POSITION = { U: [1, 0], L: [0, 1], F: [1, 1], R: [2, 1], B: [3, 1], D: [1, 2] };
+/* Where each face sits in the unfolded net is a matter of layout, not of data, and it
+   changes at the phone breakpoint — so it lives in CSS, keyed off `data-face`. */
 
 function Sticker({ face, index, selected, uncertain, brush, onPaint }) {
   return (
@@ -100,13 +100,8 @@ export function ReviewNet({
       <div className="review__body">
         <div className="net" role="group" aria-label="Cube net">
           {FACES.map((face) => {
-            const [col, row] = NET_POSITION[face];
             return (
-              <div
-                key={face}
-                className="net__face"
-                style={{ gridColumn: col + 1, gridRow: row + 1 }}
-              >
+              <div key={face} className="net__face" data-face={face}>
                 <span className="chrome net__label">{FACE_COLOUR[face]}</span>
                 <div className="net__grid">
                   {byFace[face].map((letter, cell) => {

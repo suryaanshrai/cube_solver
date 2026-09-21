@@ -13,6 +13,13 @@
 html {
   -webkit-text-size-adjust: 100%;
   scrollbar-color: var(--ink-18) transparent;
+  /* Proximity, not mandatory: a chapter settles when you come to rest near one, but a
+     long scroll still flows and a chapter taller than the viewport stays reachable.
+     Mandatory would make the overflow past 100svh unreachable and would fight Lenis for
+     control of the scroll position on every frame. Declared on `html` because only the
+     root element's snapping propagates to the viewport. */
+  scroll-snap-type: y proximity;
+  scroll-padding-top: var(--nav-h, 4.5rem);
 }
 
 body {
@@ -206,6 +213,11 @@ select {
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
+  }
+  /* Snapping is motion the user did not ask for, and `scroll-behavior: auto` does not
+     turn it off. This matches the `tier === "still"` bail-out that also drops Lenis. */
+  html {
+    scroll-snap-type: none;
   }
 }
 

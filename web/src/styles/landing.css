@@ -32,6 +32,9 @@
   align-items: center;
   justify-content: space-between;
   padding: clamp(1.1rem, 2.4vh, 1.9rem) var(--margin);
+  padding-top: max(clamp(1.1rem, 2.4vh, 1.9rem), env(safe-area-inset-top));
+  padding-left: max(var(--margin), env(safe-area-inset-left));
+  padding-right: max(var(--margin), env(safe-area-inset-right));
   mix-blend-mode: difference;
 }
 
@@ -71,6 +74,7 @@
   display: flex;
   align-items: center;
   padding-block: var(--space-section);
+  scroll-snap-align: start;
 }
 
 .chapter__copy {
@@ -212,8 +216,11 @@
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
-  padding: var(--space-block) var(--margin) clamp(1.5rem, 4vh, 2.5rem);
+  padding: var(--space-block) var(--margin) max(clamp(1.5rem, 4vh, 2.5rem), env(safe-area-inset-bottom));
   border-top: 1px solid var(--hairline);
+  /* The footer sits outside <main>, so it needs its own snap point or it becomes the one
+     part of the page that is awkward to come to rest on. */
+  scroll-snap-align: end;
 }
 
 .foot a {
@@ -234,7 +241,9 @@
   }
 
   .chapter {
-    min-height: auto;
+    /* Short enough to stay compact, tall enough that a snap point is roughly a screen —
+       chapters much shorter than the viewport make proximity snapping feel jumpy. */
+    min-height: 88svh;
     padding-block: clamp(5rem, 14vh, 8rem);
   }
 
@@ -260,5 +269,15 @@
   .nav {
     mix-blend-mode: normal;
     background: linear-gradient(var(--ground), transparent);
+  }
+}
+
+@media (max-width: 480px) {
+  /* Monospaced HUD strings are set at a fixed size everywhere else; at this width the
+     longer ones wrap and strand their closing bracket on a line of its own. */
+  .eyebrow,
+  .chapter .chrome {
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
   }
 }

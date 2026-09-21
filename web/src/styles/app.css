@@ -16,6 +16,9 @@
   justify-content: space-between;
   gap: 1rem;
   padding: clamp(0.9rem, 2vh, 1.4rem) var(--margin);
+  padding-top: max(clamp(0.9rem, 2vh, 1.4rem), env(safe-area-inset-top));
+  padding-left: max(var(--margin), env(safe-area-inset-left));
+  padding-right: max(var(--margin), env(safe-area-inset-right));
   border-bottom: 1px solid var(--hairline);
 }
 
@@ -297,6 +300,35 @@
   margin-top: auto;
 }
 
+/* The second row is the way out rather than the way on, so it sits quieter and does not
+   claim the `margin-top: auto` that pins the primary pair to the bottom of the column. */
+.scan__coach-actions--quiet {
+  margin-top: 0;
+}
+
+/* The nine colours as they were actually read, shown against the frozen frame. */
+.scan__read {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  width: clamp(7rem, 26vh, 10rem);
+  aspect-ratio: 1;
+  padding: 6px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  background: var(--ground-1);
+}
+
+.scan__read .sticker {
+  cursor: default;
+}
+
+/* Freezing the preview is a state worth seeing: the frame stops *and* recedes, so the
+   nine swatches beside it are plainly the subject. */
+.scan--frozen .scan__video {
+  filter: saturate(0.55) brightness(0.72);
+}
+
 /* ── review ──────────────────────────────────────────────────────────────── */
 .review {
   flex: 1;
@@ -332,6 +364,14 @@
   flex-direction: column;
   gap: 0.45rem;
 }
+
+/* The unfolded net: U above F, the equator L F R B running across, D below. */
+.net__face[data-face="U"] { grid-area: 1 / 2; }
+.net__face[data-face="L"] { grid-area: 2 / 1; }
+.net__face[data-face="F"] { grid-area: 2 / 2; }
+.net__face[data-face="R"] { grid-area: 2 / 3; }
+.net__face[data-face="B"] { grid-area: 2 / 4; }
+.net__face[data-face="D"] { grid-area: 3 / 2; }
 
 .net__label {
   color: var(--ink-38);
@@ -718,9 +758,18 @@ kbd {
 }
 
 @media (max-width: 620px) {
+  /* Four faces across leaves each sticker around 23px on a phone — half a thumb. The net
+     folds to three columns instead, which is still the shape of an unfolded cube and
+     gives every sticker something like 32px to be tapped at. */
   .net {
-    gap: 0.35rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
+    max-width: 22rem;
   }
+
+  /* Four across is too narrow for a thumb, so B folds under D and the net becomes a
+     column of four rows. It still reads as an unfolded cube. */
+  .net__face[data-face="B"] { grid-area: 4 / 2; }
 
   .net__label {
     font-size: 0.5625rem;
@@ -728,5 +777,57 @@ kbd {
 
   .solve__notation {
     font-size: 2.75rem;
+  }
+
+  /* A vertical drag over the cube belongs to the page, not to OrbitControls — without
+     this the solve screen is a trap you cannot scroll past. Horizontal drag still turns
+     the cube. `!important` is load-bearing: three's OrbitControls writes
+     `touch-action: none` straight onto the canvas element when it connects. */
+  .solve__canvas {
+    touch-action: pan-y !important;
+  }
+
+  .scan__stage {
+    touch-action: pan-y;
+  }
+
+  .scan__read {
+    width: clamp(6rem, 22vh, 8rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .tool__steps {
+    gap: 0.45rem;
+  }
+
+  /* On a phone the coach is below the stage, so the stage may not take half the screen
+     or the buttons that move the scan on fall off the bottom of it. */
+  .scan__stage {
+    min-height: 40svh;
+  }
+
+  .scan__coach {
+    padding: 1rem var(--margin) max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .scan__coach-actions .btn {
+    flex: 1 1 auto;
+  }
+
+  /* A frozen frame is a reference, not the subject — the decision is in the panel below
+     it, and on a short screen both rows of buttons have to be reachable without a scroll. */
+  .scan--frozen .scan__stage {
+    min-height: 28svh;
+  }
+
+  .shortcuts__list > div {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+
+  .rail__token {
+    min-width: 44px;
+    min-height: 44px;
   }
 }

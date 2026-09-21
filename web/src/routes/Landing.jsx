@@ -90,7 +90,10 @@ export function Landing() {
   // also the first thing to drop when the user has asked for less motion.
   useEffect(() => {
     if (tier === "still" || typeof window === "undefined") return undefined;
-    const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+    // Touch scrolling stays native: Lenis driving window.scrollTo every frame and CSS
+    // scroll-snap resolving a snap point are two things steering the same scroll
+    // position, and on a phone the browser's own handling is smoother than either.
+    const lenis = new Lenis({ duration: 1.1, smoothWheel: true, syncTouch: false });
     let raf = 0;
     const loop = (time) => {
       lenis.raf(time);

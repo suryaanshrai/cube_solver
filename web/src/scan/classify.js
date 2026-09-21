@@ -97,9 +97,9 @@ export function rgbToHsv([r, g, b]) {
 /**
  * Best-effort single-sample colour name, with no calibration to lean on.
  *
- * Only used for the live "is the right face pointing at me?" check during aiming, where
- * being roughly right immediately beats being exactly right too late. The committed
- * reading always goes through `classifyCube`.
+ * Kept for the coarse cases and for callers that only want a name. The live scan gate
+ * uses `cellColour` below, which is the same idea done in Lab and, where the scan has
+ * already banked a centre, against that centre rather than against a constant.
  */
 export function coarseColour([r, g, b]) {
   const [h, s, v] = rgbToHsv([r, g, b]);
@@ -110,8 +110,85 @@ export function coarseColour([r, g, b]) {
   if (h < 72) return "yellow";
   if (h < 170) return "green";
   if (h < 265) return "blue";
-  return "red";
+  // 265–345 is magenta and pink. No cube sticker is either, so this is something the
+  // reticle should not be pointed at — saying so beats calling it red.
+  return null;
 }
+
+/* ── the live gate's classifier ───────────────────────────────────────────── */
+
+/** Nominal sticker colours, matching the --cube-* tokens. Starting points, not truth. */
+export const PALETTE = {
+  yellow: [242, 208, 36],
+  green: [20, 160, 90],
+  red: [216, 53, 42],
+  white: [236, 239, 242],
+  blue: [28, 95, 208],
+  orange: [235, 123, 28],
+};
+
+export const COLOUR_NAMES = Object.keys(PALETTE);
+
+/**
+ * The two pairs a camera actually confuses.
+ *
+ * Red and orange are the same hue family separated by maybe thirty degrees, and a warm
+ * bulb moves an orange sticker most of that distance. White and yellow separate by
+ * saturation alone, which is exactly what auto white balance is busy changing. Fixed
+ * thresholds cannot tell either pair apart; a sample of the *other* member of the pair,
+ * taken from this cube in this room, can.
+ */
+export const AMBIGUOUS_WITH = {
+  red: "orange",
+  orange: "red",
+  white: "yellow",
+  yellow: "white",
+};
+
+const PALETTE_LAB = Object.fromEntries(
+  Object.entries(PALETTE).map(([name, rgb]) => [name, rgbToLab(rgb)]),
+);
+
+/** A cell too dark, or too washed out, to be a sticker at all. */
+function unreadable([r, g, b]) {
+  const [, s, v] = rgbToHsv([r, g, b]);
+  if (v < 0.18) return "dark"; // hair, a shadow, the back of a chair
+  if (s < 0.22 && v < 0.55) return "grey"; // a wall, a worktop, a grey t-shirt
+  return null;
+}
+
+/**
+ * Name one cell, with the margin to the runner-up.
+ *
+ * `seeds` maps a colour name to a Lab reading of that centre, banked earlier in this
+ * scan. Where a seed exists it replaces the nominal palette entry, so every later face
+ * is judged against this cube under this light rather than against a constant.
+ *
+ * @returns {{name: string|null, margin: number, runnerUp: string|null, reason: string|null}}
+ */
+export function cellColour(rgb, { seeds = null } = {}) {
+  const reason = unreadable(rgb);
+  if (reason) return { name: null, margin: 0, runnerUp: null, reason };
+
+  const lab = rgbToLab(rgb);
+  const refs = seeds ? { ...PALETTE_LAB, ...seeds } : PALETTE_LAB;
+
+  const scored = COLOUR_NAMES.map((name) => ({ name, cost: deltaE94(lab, refs[name]) })).sort(
+    (a, b) => a.cost - b.cost,
+  );
+
+  return {
+    name: scored[0].name,
+    margin: scored[1].cost - scored[0].cost,
+    runnerUp: scored[1].name,
+    reason: null,
+  };
+}
+
+/** Below this margin a cell is a guess between two colours rather than a reading. */
+export const CELL_MARGIN = 3;
+/** How far a centre must sit from its confusable twin before the twin is ruled out. */
+export const PAIR_SEPARATION = 6;
 
 /* ── the committed pass ───────────────────────────────────────────────────── */
 
